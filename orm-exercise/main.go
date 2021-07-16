@@ -91,8 +91,8 @@ func GetUser(c echo.Context) error {
 	DB.Model(&User{}).Where("id = ?", id).Count(&count)
 
 	if count == 0 {
-		return c.JSON(http.StatusBadRequest, map[string]interface{}{
-			"message": "id ga ada",
+		return c.JSON(http.StatusNotFound, map[string]interface{}{
+			"message": "id not found",
 		})
 	} else {
 		var user User
