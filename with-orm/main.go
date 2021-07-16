@@ -1,30 +1,34 @@
 package main
 
 import (
-	"gorm.io/gorm"
-  	"gorm.io/driver/mysql"
+	"fmt"
 	"net/http"
-	"github.com/labstack/echo"
 	"strconv"
+
+	"github.com/labstack/echo"
+	"gorm.io/driver/mysql"
+	"gorm.io/gorm"
 )
 
 type Book struct {
-	ID 			int		`json:"id" form:"id"`
-	Title 		string	`json:"title" form:"title"`
-	Author 		string	`json:"author" form:"author"`
-	Publisher 	string	`json:"publisher" form:"publisher"`
+	gorm.Model
+	ID        int    `json:"id" form:"id"`
+	Title     string `json:"title" form:"title"`
+	Author    string `json:"author" form:"author"`
+	Publisher string `json:"publisher" form:"publisher"`
 }
 
 var db *gorm.DB
 
 func main() {
-	connectionString := "root:welcome12345@tcp(localhost:3306)/orm"
+	connectionString := "root:welcome12345@tcp(localhost:3306)/orm?parseTime=true"
 	var err error
 	db, err = gorm.Open(mysql.Open(connectionString), &gorm.Config{})
 	if err != nil {
 		panic(err)
 	}
 	db.AutoMigrate(&Book{})
+	fmt.Println(db)
 
 	e := echo.New()
 	e.GET("/books", GetBooks)
@@ -43,7 +47,7 @@ func DeleteBook(c echo.Context) error {
 		})
 	}
 	var book Book
-	if tx := db.Find(&book, id); tx.Error != nil {
+	if tx := db.Find(&book, "id=?", id); tx.Error != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": "cannot fetch data",
 		})
@@ -67,7 +71,7 @@ func UpdateBook(c echo.Context) error {
 		})
 	}
 	var book Book
-	if tx := db.Find(&book, id); tx.Error != nil {
+	if tx := db.Find(&book, "id=?", id); tx.Error != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": "cannot fetch data",
 		})
@@ -92,7 +96,7 @@ func GetOneBook(c echo.Context) error {
 		})
 	}
 	var book Book
-	if tx := db.Find(&book, id); tx.Error != nil {
+	if tx := db.Find(&book, "id=?", id); tx.Error != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": "cannot fetch data",
 		})
