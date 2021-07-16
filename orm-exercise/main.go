@@ -37,7 +37,7 @@ func InitDB() {
 		DB_Name		: "crud_go",
 	}
 
-	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=True&loc=Local",
+	connectionString := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8&parseTime=true&loc=Local",
 		config.DB_Username,
 		config.DB_Password,
 		config.DB_Host,
@@ -53,6 +53,7 @@ func InitDB() {
 }
 
 type User struct {
+	gorm.Model
 	ID 			int		`json:"id" form:"id"`
 	Name		string	`json:"name" form:"name"`
 	Email		string	`json:"email" form:"email"`
@@ -86,16 +87,25 @@ func GetUser(c echo.Context) error {
 		})
 	}
 
-	var user User
-	if tx := DB.Find(&user, id); tx.Error != nil {
-		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
-			"message": "cannot fetch data",
+	var count int64
+	DB.Model(&User{}).Where("id = ?", id).Count(&count)
+
+	if count == 0 {
+		return c.JSON(http.StatusBadRequest, map[string]interface{}{
+			"message": "id ga ada",
+		})
+	} else {
+		var user User
+		if tx := DB.Find(&user, "id=?", id); tx.Error != nil {
+			return c.JSON(http.StatusInternalServerError, map[string]interface{}{
+				"message": "cannot fetch data",
+			})
+		}
+		return c.JSON(http.StatusOK, map[string]interface{}{
+			"message": "success",
+			"data":    &user,
 		})
 	}
-	return c.JSON(http.StatusOK, map[string]interface{}{
-		"message": "success",
-		"data":    user,
-	})
 }
 
 //create new user
@@ -122,7 +132,7 @@ func DeleteUser(c echo.Context) error {
 		})
 	}
 	var user User
-	if tx := DB.Find(&user, id); tx.Error != nil {
+	if tx := DB.Find(&user, "id=?", id); tx.Error != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": "cannot fetch data",
 		})
@@ -147,7 +157,7 @@ func UpdateUser(c echo.Context) error {
 		})
 	}
 	var user User
-	if tx := DB.Find(&user, id); tx.Error != nil {
+	if tx := DB.Find(&user, "id=?", id); tx.Error != nil {
 		return c.JSON(http.StatusInternalServerError, map[string]interface{}{
 			"message": "cannot fetch data",
 		})
