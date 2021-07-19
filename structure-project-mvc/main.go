@@ -1,23 +1,16 @@
 package main
 
 import (
-	c "github.com/iswanulumam/go-training-restful/controllers"
+	"projects/config"
+	"projects/routes"
+
 	"github.com/labstack/echo"
 )
 
-func New() *echo.Echo{
-	e := echo.New()
-
-	//routing
-	e.GET("/users", c.GetAllUsers)
-	e.GET("/users/:id", c.GetUser)
-	e.POST("/users", c.CreateUser)
-	e.DELETE("/users/:id", c.DeleteUser)
-	e.PUT("/users/:id", c.UpdateUser)
-
-	return e
-}
-
 func main() {
-	
+	e := echo.New()
+	config.InitDb()
+	// config.InitPort()
+	routes.New(e)
+	e.Logger.Fatal(e.Start(":8000"))
 }
