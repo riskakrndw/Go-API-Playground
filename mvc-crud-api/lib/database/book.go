@@ -32,13 +32,8 @@ func GetBook(id int) (interface{}, error) {
 	return book, nil
 }
 
-func UpdateBook(id int, c echo.Context) (interface{}, error) {
-	var book models.Book
-	if err := config.DB.Find(&book, "id=?", id).Error; err != nil {
-		return nil, err
-	}
-	c.Bind(&book)
-	if err := config.DB.Save(&book).Error; err != nil {
+func UpdateBook(id int, book interface{}) (interface{}, error) {
+	if err := config.DB.Find(&book, "id=?", id).Save(&book).Error; err != nil {
 		return nil, err
 	}
 	return book, nil
@@ -46,10 +41,7 @@ func UpdateBook(id int, c echo.Context) (interface{}, error) {
 
 func DeleteBook(id int) (interface{}, error) {
 	var book models.Book
-	if err := config.DB.Find(&book, "id=?", id).Error; err != nil {
-		return nil, err
-	}
-	if err := config.DB.Delete(&book).Error; err != nil {
+	if err := config.DB.Find(&book, "id=?", id).Delete(&book).Error; err != nil {
 		return nil, err
 	}
 	return book, nil

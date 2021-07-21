@@ -49,13 +49,8 @@ func GetUser(id int) (interface{}, error) {
 	return user, nil
 }
 
-func UpdateUser(id int, c echo.Context) (interface{}, error) {
-	var user models.User
-	if err := config.DB.Find(&user, "id=?", id).Error; err != nil {
-		return nil, err
-	}
-	c.Bind(&user)
-	if err := config.DB.Save(&user).Error; err != nil {
+func UpdateUser(id int, user interface{}) (interface{}, error) {
+	if err := config.DB.Find(&user, "id=?", id).Save(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
@@ -63,10 +58,7 @@ func UpdateUser(id int, c echo.Context) (interface{}, error) {
 
 func DeleteUser(id int) (interface{}, error) {
 	var user models.User
-	if err := config.DB.Find(&user, "id=?", id).Error; err != nil {
-		return nil, err
-	}
-	if err := config.DB.Delete(&user).Error; err != nil {
+	if err := config.DB.Find(&user, "id=?", id).Delete(&user).Error; err != nil {
 		return nil, err
 	}
 	return user, nil
