@@ -48,19 +48,35 @@ func DeleteUserController(c echo.Context) error {
 
 // //update user by id
 func UpdateUserController(c echo.Context) error {
+	userId, _ := strconv.Atoi(c.Param("userId"))
+
 	user := new(User)
 	if err := c.Bind(user); err != nil {
 		return err
 	}
-	userId, _ := strconv.Atoi(c.Param("userId"))
 	users[userId].Name = user.Name
 	users[userId].Email = user.Email
 	users[userId].Password = user.Password
 	return c.JSON(http.StatusOK, map[string]interface{}{
 		"message": "success update user",
-		"user":    users[userId],
+		"user":    user,
 	})
 }
+
+// func UpdateUserController(c echo.Context) error {
+// 	user := new(User)
+// 	if err := c.Bind(user); err != nil {
+// 		return err
+// 	}
+// 	userId, _ := strconv.Atoi(c.Param("userId"))
+// 	users[userId].Name = user.Name
+// 	users[userId].Email = user.Email
+// 	users[userId].Password = user.Password
+// 	return c.JSON(http.StatusOK, map[string]interface{}{
+// 		"message": "success update user",
+// 		"user":    users[userId],
+// 	})
+// }
 
 //create new user
 func CreateUserController(c echo.Context) error {
