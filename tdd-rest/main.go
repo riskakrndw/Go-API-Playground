@@ -18,7 +18,14 @@ func main() {
 		panic(err)
 	}
 	bookModel := model.NewGormBookModel(db)
+
+	//get
 	bookController := controller.CreateGetBookController(bookModel)
 	e.GET("/book", bookController)
+
+	//post
+	postBookController := controller.CreatePostBookController(bookModel)
+	e.POST("/book", postBookController)
+
 	e.Start(":8080")
 }

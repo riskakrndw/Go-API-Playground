@@ -12,3 +12,12 @@ func CreateGetBookController(bookModel model.BookModel) echo.HandlerFunc {
 		return c.JSON(200, books)
 	}
 }
+
+func CreatePostBookController(bookModel model.BookModel) echo.HandlerFunc {
+	return func(c echo.Context) error {
+		var book model.Book
+		c.Bind(&book)
+		bookModel.Insert(book)
+		return c.JSON(200, book)
+	}
+}
